@@ -2,20 +2,19 @@ package br.com.conteudou.Model;
 
 
 import br.com.conteudou.Interface.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.conteudou.Util.Modelador;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "curso", schema = "conteudou", uniqueConstraints = {@UniqueConstraint(columnNames = {"nome"})})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Curso implements Model {
+public class Curso extends Modelador<Curso> implements Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,19 +38,11 @@ public class Curso implements Model {
     @NotNull(message = "A cor deve ser informada!")
     private String cor;
 
-    @Column(name = "data_criacao")
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dataCriacao;
-
     @OneToMany(mappedBy = "curso", cascade = CascadeType.REMOVE)
     private List<Materia> materias;
 
     @Override
     public void preInitializy() {
-        if(dataCriacao == null){
-            dataCriacao = new Date();
-        }
     }
 
     public Long getId() {
@@ -92,14 +83,6 @@ public class Curso implements Model {
 
     public void setCor(String cor) {
         this.cor = cor;
-    }
-
-    public Date getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
     }
 
     public List<Materia> getMaterias() {

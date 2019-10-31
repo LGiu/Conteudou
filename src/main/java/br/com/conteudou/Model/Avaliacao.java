@@ -2,19 +2,16 @@ package br.com.conteudou.Model;
 
 
 import br.com.conteudou.Interface.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.conteudou.Util.Modelador;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
-import java.util.Date;
 
 @Entity
 @Table(name = "avaliacao", schema = "conteudou")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Avaliacao implements Model {
+public class Avaliacao extends Modelador<Avaliacao> implements Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,17 +30,8 @@ public class Avaliacao implements Model {
     @Range(min = 0, max = 5, message = "A avaliação deve ser de 0 à 5!")
     private Integer avaliacao;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @JsonSerialize()
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
     @Override
     public void preInitializy() {
-        if(dataCriacao == null){
-            dataCriacao = new Date();
-        }
     }
 
     public Long getId() {
@@ -77,11 +65,4 @@ public class Avaliacao implements Model {
         this.avaliacao = avaliacao;
     }
 
-    public Date getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
 }

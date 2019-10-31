@@ -2,21 +2,20 @@ package br.com.conteudou.Model;
 
 
 import br.com.conteudou.Interface.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.conteudou.Util.Modelador;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 
 @Entity
 @Table(name = "usuario", schema = "conteudou", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Usuario implements Model {
+public class Usuario extends Modelador<Usuario> implements Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,16 +38,13 @@ public class Usuario implements Model {
     @Size(max = 255, message = "O nome deve possuir no máximo 255 caracteres!")
     private String nome;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @JsonSerialize()
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
+    @Column(name = "flag_administrador", columnDefinition = "boolean default false")
+    private Boolean flagAdministrador;
 
     @Override
     public void preInitializy() {
-        if(dataCriacao == null){
-            dataCriacao = new Date();
+        if (id == null) {
+            senha = new BCryptPasswordEncoder().encode(senha);
         }
     }
 
@@ -85,11 +81,11 @@ public class Usuario implements Model {
         this.nome = nome;
     }
 
-    public Date getDataCriacao() {
-        return dataCriacao;
+    public Boolean getFlagAdministrador() {
+        return flagAdministrador;
     }
 
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
+    public void setFlagAdministrador(Boolean flagAdministrador) {
+        this.flagAdministrador = flagAdministrador;
     }
 }

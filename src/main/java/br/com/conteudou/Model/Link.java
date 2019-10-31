@@ -2,21 +2,19 @@ package br.com.conteudou.Model;
 
 
 import br.com.conteudou.Interface.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.conteudou.Util.Modelador;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 
 @Entity
 @Table(name = "link", schema = "conteudou", uniqueConstraints = {@UniqueConstraint(columnNames = {"i_conteudo", "url"})})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Link implements Model {
+public class Link extends Modelador<Link> implements Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +23,7 @@ public class Link implements Model {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "i_conteudo")
+    @NotNull(message = "O coonteúdo deve ser informado!")
     private Conteudo conteudo;
 
     @Column(name = "icone")
@@ -40,17 +39,8 @@ public class Link implements Model {
     @Range(min = 1, message = "A posição deve ser de no mínimo 1!")
     private Integer posicao;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @JsonSerialize()
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
     @Override
     public void preInitializy() {
-        if(dataCriacao == null){
-            dataCriacao = new Date();
-        }
     }
 
     public Long getId() {
@@ -91,13 +81,5 @@ public class Link implements Model {
 
     public void setPosicao(Integer posicao) {
         this.posicao = posicao;
-    }
-
-    public Date getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
     }
 }

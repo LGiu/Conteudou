@@ -2,21 +2,18 @@ package br.com.conteudou.Model;
 
 
 import br.com.conteudou.Interface.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.conteudou.Util.Modelador;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "conteudo", schema = "conteudou", uniqueConstraints = {@UniqueConstraint(columnNames = {"i_sub_materia", "nome"})})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Conteudo implements Model {
+public class Conteudo extends Modelador<Conteudo> implements Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +26,7 @@ public class Conteudo implements Model {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "i_sub_materia")
+    @NotNull(message = "A sub matéria deve ser informada!")
     private SubMateria subMateria;
 
     @Column(name = "nome")
@@ -47,17 +45,8 @@ public class Conteudo implements Model {
     @OneToMany(mappedBy = "conteudo", cascade = CascadeType.REMOVE)
     private List<Link> links;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @JsonSerialize()
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
     @Override
     public void preInitializy() {
-        if(dataCriacao == null){
-            dataCriacao = new Date();
-        }
     }
 
     public Long getId() {
@@ -106,14 +95,6 @@ public class Conteudo implements Model {
 
     public void setCor(String cor) {
         this.cor = cor;
-    }
-
-    public Date getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
     }
 
     public List<Link> getLinks() {

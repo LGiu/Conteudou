@@ -3,15 +3,13 @@ package br.com.conteudou.Util;
 import br.com.conteudou.Interface.Model;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class Patch<U extends Model> {
@@ -33,11 +31,13 @@ public class Patch<U extends Model> {
     }
 
     public ResponseEntity<Retorno> salva(U u) {
+        u = preInitializy(u);
         return new ResponseEntity<>(serviceGenerico.salva(u), HttpStatus.OK);
     }
 
     public ResponseEntity<Retorno> altera(U u) {
         u = aplicaAlteracoes(u, serviceGenerico.buscaPorId(u.getId()));
+        u = preInitializy(u);
         return new ResponseEntity<>(serviceGenerico.salva(u), HttpStatus.OK);
     }
 
@@ -75,5 +75,30 @@ public class Patch<U extends Model> {
         dadosPaginados.setConteudo(list);
         return dadosPaginados;
     }
+
+    public U preInitializy(U u) {
+        if (u.getId() == null) {
+            u.setDataCriacao(new Date());
+        }
+        u.setDataAlteracao(new Date());
+        u.preInitializy();
+        return u;
+    }
+
+    /*private List<U> trataDados(List<U> list) {
+        if (list != null) {
+            for (int x = 0; x < list.size(); x++) {
+                BeanWrapper b = new BeanWrapperImpl(list.get(x));
+                b.setAutoGrowNestedPaths(true);
+                for (Field field : aClass.getDeclaredFields()) {
+                    if (field.getType() == Date.class && b.getPropertyValue(field.getName()) != null) {
+                        b.setPropertyValue(field.getName(), Datas.dataSerializada((Date) b.getPropertyValue(field.getName())));
+                    }
+                }
+                list.set(x, ((U) b));
+            }
+        }
+        return list;
+    }*/
 
 }
