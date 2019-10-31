@@ -41,10 +41,15 @@ public class Usuario extends Modelador<Usuario> implements Model {
     @Column(name = "flag_administrador", columnDefinition = "boolean default false")
     private Boolean flagAdministrador;
 
+
     @Override
     public void preInitializy() {
-        if (id == null) {
+        if (id == null && senha != null) {
             senha = new BCryptPasswordEncoder().encode(senha);
+        }
+
+        if (flagAdministrador == null) {
+            flagAdministrador = false;
         }
     }
 

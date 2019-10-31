@@ -13,14 +13,20 @@ import javax.transaction.Transactional;
 @Service
 public class AvaliacaoService extends ServiceGenerico<Avaliacao> {
 
+    private final LoginService loginService;
+
     @Autowired
-    public AvaliacaoService(AvaliacaoRepository avaliacaoRepository) {
+    public AvaliacaoService(AvaliacaoRepository avaliacaoRepository, LoginService loginService) {
         super(avaliacaoRepository, Avaliacao.class);
+        this.loginService = loginService;
     }
 
     @Override
     @Transactional
     public Retorno salva(Avaliacao avaliacao) {
+        if (avaliacao.getId() == null) {
+            avaliacao.setUsuario(loginService.getUsuarioAtual());
+        }
         return super.salva(avaliacao);
     }
 

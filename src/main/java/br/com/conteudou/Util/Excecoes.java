@@ -33,4 +33,12 @@ public class Excecoes {
             return new ResponseEntity<>(new Retorno("Erro!"), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @ExceptionHandler({ApiError.class})
+    public ResponseEntity<Retorno> erroAPI(ApiError apiError) {
+        Retorno retorno = new Retorno();
+        retorno.setErro(true);
+        retorno.setMensagem(apiError.getMessage());
+        return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
+    }
 }

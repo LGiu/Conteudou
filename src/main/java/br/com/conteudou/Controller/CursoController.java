@@ -30,9 +30,10 @@ public class CursoController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/cursos", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DadosPaginados<Curso>> buscaCursos(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                           @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                           @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual) {
-        return patch.consultar(ordem, tamanho, paginaAtual);
+                                                             @RequestHeader(value = "tamanho", required = false) Integer tamanho,
+                                                             @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                             @RequestHeader(value = "filtros", required = false) String filtros) {
+        return patch.consultar(ordem, tamanho, paginaAtual, filtros);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/curso", produces = MediaType.APPLICATION_JSON_VALUE)

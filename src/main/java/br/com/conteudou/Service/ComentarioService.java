@@ -13,14 +13,20 @@ import javax.transaction.Transactional;
 @Service
 public class ComentarioService extends ServiceGenerico<Comentario> {
 
+    private final LoginService loginService;
+
     @Autowired
-    public ComentarioService(ComentarioRepository comentarioRepository) {
+    public ComentarioService(ComentarioRepository comentarioRepository, LoginService loginService) {
         super(comentarioRepository, Comentario.class);
+        this.loginService = loginService;
     }
 
     @Override
     @Transactional
     public Retorno salva(Comentario comentario) {
+        if (comentario.getId() == null) {
+            comentario.setUsuario(loginService.getUsuarioAtual());
+        }
         return super.salva(comentario);
     }
 

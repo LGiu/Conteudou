@@ -1,5 +1,6 @@
 package br.com.conteudou.Util;
 
+import br.com.conteudou.Enum.Comparador;
 import br.com.conteudou.Interface.Model;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -22,8 +23,15 @@ public class Patch<U extends Model> {
         this.aClass = aClass;
     }
 
-    public ResponseEntity<DadosPaginados<U>> consultar(String ordem, Integer tamanho, Integer paginaAtual) {
-        return new ResponseEntity<>(converteDadosPaginados(serviceGenerico.buscaLista(ordem, tamanho, paginaAtual), tamanho, paginaAtual), HttpStatus.OK);
+    public ResponseEntity<DadosPaginados<U>> consultar(String ordem, Integer tamanho, Integer paginaAtual, String filtro) {
+        List<Filtro> filtros = new ArrayList<>();
+        if (filtro != null && !filtro.equals("")) {
+            filtros = getFiltros(filtro);
+            if (filtros == null) {
+                throw new ApiError("Erro de filtro!");
+            }
+        }
+        return new ResponseEntity<>(converteDadosPaginados(serviceGenerico.buscaLista(ordem, tamanho, paginaAtual, filtros), tamanho, paginaAtual), HttpStatus.OK);
     }
 
     public ResponseEntity<DadosPaginados<U>> consultar(Long id, String ordem, Integer tamanho, Integer paginaAtual) {
@@ -62,11 +70,11 @@ public class Patch<U extends Model> {
         return null;
     }
 
-    private DadosPaginados<U> converteDadosPaginados(U u, Integer tamanho, Integer paginaAtual) {
+    public DadosPaginados<U> converteDadosPaginados(U u, Integer tamanho, Integer paginaAtual) {
         return converteDadosPaginados((u == null ? new ArrayList<>() : Collections.singletonList(u)), tamanho, paginaAtual);
     }
 
-    private DadosPaginados<U> converteDadosPaginados(List<U> list, Integer tamanho, Integer paginaAtual) {
+    public DadosPaginados<U> converteDadosPaginados(List<U> list, Integer tamanho, Integer paginaAtual) {
         DadosPaginados<U> dadosPaginados = new DadosPaginados();
         dadosPaginados.setNumeroPagina((paginaAtual == null ? 0 : paginaAtual));
         dadosPaginados.setQuantidadeRegistros(list.size());
@@ -83,6 +91,27 @@ public class Patch<U extends Model> {
         u.setDataAlteracao(new Date());
         u.preInitializy();
         return u;
+    }
+
+    private List<Filtro> getFiltros(String filtro) {
+        List<Filtro> filtroList = new ArrayList<>();
+        try {
+            String[] filtros = filtro.split("&");
+            for (String f : filtros) {
+                Comparador comparador = null;
+                if (f.contains(Comparador.IGUAL.getDescricao())) {
+                    comparador = Comparador.IGUAL;
+                } else if (f.contains(Comparador.DIFERENTE.getDescricao())) {
+                    comparador = Comparador.DIFERENTE;
+                } else if (f.contains(Comparador.CONTEM.getDescricao())) {
+                    comparador = Comparador.IGUAL;
+                }
+                filtroList.add(new Filtro(f.substring(0, f.indexOf(comparador.getDescricao())), comparador, f.substring(f.lastIndexOf(comparador.getDescricao()) + 1)));
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return filtroList;
     }
 
     /*private List<U> trataDados(List<U> list) {

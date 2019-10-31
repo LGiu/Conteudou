@@ -1,11 +1,13 @@
 package br.com.conteudou.Controller;
 
 import br.com.conteudou.Model.Usuario;
+import br.com.conteudou.Service.LoginService;
 import br.com.conteudou.Service.UsuarioService;
 import br.com.conteudou.Util.DadosPaginados;
 import br.com.conteudou.Util.Patch;
 import br.com.conteudou.Util.Retorno;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,25 +16,25 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     private final Patch<Usuario> patch;
+    private final LoginService loginService;
 
     @Autowired
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, LoginService loginService) {
         patch = new Patch<>(usuarioService, Usuario.class);
+        this.loginService = loginService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/usuario/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DadosPaginados<Usuario>> buscaUsuario(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                            @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                            @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
-                                                            @PathVariable Long id) {
-        return patch.consultar(id, ordem, tamanho, paginaAtual);
+    @RequestMapping(method = RequestMethod.GET, value = "/usuario", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DadosPaginados<Usuario>> buscaUsuario() {
+        return new ResponseEntity<>(patch.converteDadosPaginados(loginService.getUsuarioAtual(), 1, 1), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DadosPaginados<Usuario>> buscaUsuarios(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                           @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                           @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual) {
-        return patch.consultar(ordem, tamanho, paginaAtual);
+                                                                 @RequestHeader(value = "tamanho", required = false) Integer tamanho,
+                                                                 @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                 @RequestHeader(value = "filtros", required = false) String filtros) {
+        return patch.consultar(ordem, tamanho, paginaAtual, filtros);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/usuario", produces = MediaType.APPLICATION_JSON_VALUE)

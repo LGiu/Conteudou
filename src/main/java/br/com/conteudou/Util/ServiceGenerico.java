@@ -1,24 +1,21 @@
 package br.com.conteudou.Util;
 
 
+import br.com.conteudou.Enum.Comparador;
 import br.com.conteudou.Interface.Model;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ServiceGenerico<U extends Model> {
 
@@ -34,25 +31,15 @@ public class ServiceGenerico<U extends Model> {
     }
 
     public Retorno validador(U u) {
-        if (u == null) {
-            return new Retorno("Objeto nulo!");
+        Retorno retorno = Validador.validacaoInicial(u);
+        if (retorno.isErro()) {
+            return retorno;
         }
-
         if (u.getId() != null && !existe(u)) {
             return new Retorno("O registro não existe!");
         }
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<U>> violations = validator.validate(u);
-        List<String> erros = new ArrayList<>();
-        if (!violations.isEmpty()) {
-            for (ConstraintViolation<U> erro : violations) {
-                erros.add(u.getClass().getSimpleName() + "." + erro.getPropertyPath() + ":" + erro.getMessage());
-            }
-            return new Retorno(erros);
-        }
-
-        return new Retorno();
+        return retorno;
     }
 
     @Transactional
@@ -109,9 +96,9 @@ public class ServiceGenerico<U extends Model> {
         }
     }
 
-    public List<U> buscaLista(String ordem, Integer tamanho, Integer paginaAtual) {
+    public List<U> buscaLista(String ordem, Integer tamanho, Integer paginaAtual, List<Filtro> filtroList) {
         try {
-            return selecao(ordem, tamanho, paginaAtual, null, null);
+            return selecao(ordem, tamanho, paginaAtual, filtroList);
         } catch (Exception e) {
             return null;
         }
@@ -133,7 +120,7 @@ public class ServiceGenerico<U extends Model> {
             if (id == null) {
                 return null;
             }
-            return selecao(ordem, tamanho, paginaAtual, "id", id).get(0);
+            return selecao(ordem, tamanho, paginaAtual, Collections.singletonList(new Filtro("id", Comparador.IGUAL, id.toString()))).get(0);
         } catch (Exception e) {
             return null;
         }
@@ -153,10 +140,10 @@ public class ServiceGenerico<U extends Model> {
     }
 
     private List<U> selecao(String ordem, Integer tamanho, Integer paginaAtual) {
-        return selecao(ordem, tamanho, paginaAtual, null, null);
+        return selecao(ordem, tamanho, paginaAtual, null);
     }
 
-    private List<U> selecao(String ordem, Integer tamanho, Integer paginaAtual, String nome, Object valor) {
+    private List<U> selecao(String ordem, Integer tamanho, Integer paginaAtual, List<Filtro> filtroList) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<U> criteriaQuery = criteriaBuilder.createQuery(aClass);
         Root<U> root = criteriaQuery.from(aClass);
@@ -168,13 +155,25 @@ public class ServiceGenerico<U extends Model> {
 
         tamanho = (tamanho == null ? 10 : tamanho);
         paginaAtual = (paginaAtual == null ? 0 : paginaAtual);
-        if (nome == null || valor == null) {
+        if (filtroList == null || !filtroList.isEmpty()) {
             return entityManager.createQuery(criteriaQuery)
                     .setFirstResult(paginaAtual * tamanho)
                     .setMaxResults(tamanho)
                     .getResultList();
         } else {
-            criteriaQuery.where(criteriaBuilder.equal(root.get(nome), valor));
+            for (Filtro filtro : filtroList) {
+                switch (filtro.getComparador()) {
+                    case IGUAL:
+                        criteriaQuery.where(criteriaBuilder.equal(root.get(filtro.getAtributo()), filtro.getValor()));
+                        break;
+                    case DIFERENTE:
+                        criteriaQuery.where(criteriaBuilder.notEqual(root.get(filtro.getAtributo()), filtro.getValor()));
+                        break;
+                    case CONTEM:
+                        criteriaQuery.where(criteriaBuilder.like(root.get(filtro.getAtributo()), "%" + filtro.getValor() + "%"));
+                        break;
+                }
+            }
             return entityManager.createQuery(criteriaQuery)
                     .setFirstResult(paginaAtual * tamanho)
                     .setMaxResults(tamanho)

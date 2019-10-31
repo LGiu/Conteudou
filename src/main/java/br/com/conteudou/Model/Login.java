@@ -12,9 +12,17 @@ public class Login implements UserDetails {
 
     private String senha;
 
+    private String permissao;
+
     public Login(Usuario usuario) {
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();
+        if (usuario.getFlagAdministrador() != null && usuario.getFlagAdministrador()) {
+            this.permissao = "ADMIN";
+
+        } else {
+            this.permissao = "USER";
+        }
     }
 
     @Override
@@ -51,4 +59,5 @@ public class Login implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

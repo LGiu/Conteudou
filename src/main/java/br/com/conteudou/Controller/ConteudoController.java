@@ -22,17 +22,18 @@ public class ConteudoController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/conteudo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DadosPaginados<Conteudo>> buscaConteudo(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                                    @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                                    @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
-                                                                    @PathVariable Long id) {
+                                                                  @RequestHeader(value = "tamanho", required = false) Integer tamanho,
+                                                                  @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                  @PathVariable Long id) {
         return patch.consultar(id, ordem, tamanho, paginaAtual);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/conteudos", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DadosPaginados<Conteudo>> buscaConteudos(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                           @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                           @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual) {
-        return patch.consultar(ordem, tamanho, paginaAtual);
+                                                                   @RequestHeader(value = "tamanho", required = false) Integer tamanho,
+                                                                   @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                   @RequestHeader(value = "filtros", required = false) String filtros) {
+        return patch.consultar(ordem, tamanho, paginaAtual, filtros);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/conteudo", produces = MediaType.APPLICATION_JSON_VALUE)

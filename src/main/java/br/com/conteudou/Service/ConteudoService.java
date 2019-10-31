@@ -13,14 +13,20 @@ import javax.transaction.Transactional;
 @Service
 public class ConteudoService extends ServiceGenerico<Conteudo> {
 
+    private final LoginService loginService;
+
     @Autowired
-    public ConteudoService(ConteudoRepository conteudoRepository) {
+    public ConteudoService(ConteudoRepository conteudoRepository, LoginService loginService) {
         super(conteudoRepository, Conteudo.class);
+        this.loginService = loginService;
     }
 
     @Override
     @Transactional
     public Retorno salva(Conteudo conteudo) {
+        if (conteudo.getId() == null) {
+            conteudo.setUsuario(loginService.getUsuarioAtual());
+        }
         return super.salva(conteudo);
     }
 

@@ -22,17 +22,18 @@ public class SubMateriaController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/sub-materia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DadosPaginados<SubMateria>> buscaSubMateria(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                            @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                            @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
-                                                            @PathVariable Long id) {
+                                                                      @RequestHeader(value = "tamanho", required = false) Integer tamanho,
+                                                                      @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                      @PathVariable Long id) {
         return patch.consultar(id, ordem, tamanho, paginaAtual);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/sub-materias", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DadosPaginados<SubMateria>> buscaSubMaterias(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                           @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                           @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual) {
-        return patch.consultar(ordem, tamanho, paginaAtual);
+                                                                       @RequestHeader(value = "tamanho", required = false) Integer tamanho,
+                                                                       @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                       @RequestHeader(value = "filtros", required = false) String filtros) {
+        return patch.consultar(ordem, tamanho, paginaAtual, filtros);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/sub-materia", produces = MediaType.APPLICATION_JSON_VALUE)
