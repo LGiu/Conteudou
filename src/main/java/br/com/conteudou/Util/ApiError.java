@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 @ControllerAdvice
 @Component("ApiErrorGrp")
 public class ApiError extends IllegalArgumentException {
+
     public ApiError() {
         super();
     }

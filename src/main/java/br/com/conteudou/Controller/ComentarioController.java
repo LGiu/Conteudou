@@ -2,6 +2,7 @@ package br.com.conteudou.Controller;
 
 import br.com.conteudou.Model.Comentario;
 import br.com.conteudou.Service.ComentarioService;
+import br.com.conteudou.Service.LoginService;
 import br.com.conteudou.Util.DadosPaginados;
 import br.com.conteudou.Util.Patch;
 import br.com.conteudou.Util.Retorno;
@@ -16,8 +17,8 @@ public class ComentarioController {
     private final Patch<Comentario> patch;
 
     @Autowired
-    public ComentarioController(ComentarioService comentarioService) {
-        patch = new Patch<>(comentarioService, Comentario.class);
+    public ComentarioController(ComentarioService comentarioService, LoginService loginService) {
+        patch = new Patch<>(comentarioService, Comentario.class, loginService);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/comentario/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

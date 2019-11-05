@@ -2,6 +2,7 @@ package br.com.conteudou.Controller;
 
 import br.com.conteudou.Model.Link;
 import br.com.conteudou.Service.LinkService;
+import br.com.conteudou.Service.LoginService;
 import br.com.conteudou.Util.DadosPaginados;
 import br.com.conteudou.Util.Patch;
 import br.com.conteudou.Util.Retorno;
@@ -16,8 +17,8 @@ public class LinkController {
     private final Patch<Link> patch;
 
     @Autowired
-    public LinkController(LinkService linkService) {
-        patch = new Patch<>(linkService, Link.class);
+    public LinkController(LinkService linkService, LoginService loginService) {
+        patch = new Patch<>(linkService, Link.class, loginService);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/link/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -2,6 +2,7 @@ package br.com.conteudou.Controller;
 
 import br.com.conteudou.Model.Avaliacao;
 import br.com.conteudou.Service.AvaliacaoService;
+import br.com.conteudou.Service.LoginService;
 import br.com.conteudou.Util.DadosPaginados;
 import br.com.conteudou.Util.Patch;
 import br.com.conteudou.Util.Retorno;
@@ -16,8 +17,8 @@ public class AvaliacaoController {
     private final Patch<Avaliacao> patch;
 
     @Autowired
-    public AvaliacaoController(AvaliacaoService avaliacaoService) {
-        patch = new Patch<>(avaliacaoService, Avaliacao.class);
+    public AvaliacaoController(AvaliacaoService avaliacaoService, LoginService loginService) {
+        patch = new Patch<>(avaliacaoService, Avaliacao.class, loginService);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/avaliacao/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

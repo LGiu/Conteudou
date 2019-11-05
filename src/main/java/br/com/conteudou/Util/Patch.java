@@ -2,8 +2,10 @@ package br.com.conteudou.Util;
 
 import br.com.conteudou.Enum.Comparador;
 import br.com.conteudou.Interface.Model;
+import br.com.conteudou.Service.LoginService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -17,13 +19,21 @@ public class Patch<U extends Model> {
 
     private final ServiceGenerico<U> serviceGenerico;
     private final Class aClass;
+    private final LoginService loginService;
 
-    public Patch(ServiceGenerico<U> serviceGenerico, Class aClass) {
+    @Autowired
+    public Patch(ServiceGenerico<U> serviceGenerico, Class aClass, LoginService loginService) {
         this.serviceGenerico = serviceGenerico;
         this.aClass = aClass;
+        this.loginService = loginService;
     }
 
     public ResponseEntity<DadosPaginados<U>> consultar(String ordem, Integer tamanho, Integer paginaAtual, String filtro) {
+        return consultar(ordem, tamanho, paginaAtual, filtro, false);
+    }
+
+    public ResponseEntity<DadosPaginados<U>> consultar(String ordem, Integer tamanho, Integer paginaAtual, String filtro, boolean validaPermissao) {
+        validaPermissao(validaPermissao);
         List<Filtro> filtros = new ArrayList<>();
         if (filtro != null && !filtro.equals("")) {
             filtros = getFiltros(filtro);
@@ -35,21 +45,44 @@ public class Patch<U extends Model> {
     }
 
     public ResponseEntity<DadosPaginados<U>> consultar(Long id, String ordem, Integer tamanho, Integer paginaAtual) {
+        return consultar(id, ordem, tamanho, paginaAtual, false);
+    }
+
+    public ResponseEntity<DadosPaginados<U>> consultar(Long id, String ordem, Integer tamanho, Integer paginaAtual, boolean validaPermissao) {
+        validaPermissao(validaPermissao);
         return new ResponseEntity<>(converteDadosPaginados(serviceGenerico.buscaPorId(id, ordem, tamanho, paginaAtual), tamanho, paginaAtual), HttpStatus.OK);
     }
 
     public ResponseEntity<Retorno> salva(U u) {
+        return salva(u, false);
+    }
+
+    public ResponseEntity<Retorno> salva(U u, boolean validaPermissao) {
+        validaPermissao(validaPermissao);
         u = preInitializy(u);
         return new ResponseEntity<>(serviceGenerico.salva(u), HttpStatus.OK);
     }
 
     public ResponseEntity<Retorno> altera(U u) {
+        return altera(u, false);
+    }
+
+    public ResponseEntity<Retorno> altera(U u, boolean validaPermissao) {
+        validaPermissao(validaPermissao);
         u = aplicaAlteracoes(u, serviceGenerico.buscaPorId(u.getId()));
+        if (u == null) {
+            return new ResponseEntity<>(new Retorno("Id não foi informado ou não existe"), HttpStatus.OK);
+        }
         u = preInitializy(u);
         return new ResponseEntity<>(serviceGenerico.salva(u), HttpStatus.OK);
     }
 
     public ResponseEntity<Retorno> exclui(Long id) {
+        return exclui(id, false);
+    }
+
+    public ResponseEntity<Retorno> exclui(Long id, boolean validaPermissao) {
+        validaPermissao(validaPermissao);
         return new ResponseEntity<>(serviceGenerico.exclui(id), HttpStatus.OK);
     }
 
@@ -114,20 +147,10 @@ public class Patch<U extends Model> {
         return filtroList;
     }
 
-    /*private List<U> trataDados(List<U> list) {
-        if (list != null) {
-            for (int x = 0; x < list.size(); x++) {
-                BeanWrapper b = new BeanWrapperImpl(list.get(x));
-                b.setAutoGrowNestedPaths(true);
-                for (Field field : aClass.getDeclaredFields()) {
-                    if (field.getType() == Date.class && b.getPropertyValue(field.getName()) != null) {
-                        b.setPropertyValue(field.getName(), Datas.dataSerializada((Date) b.getPropertyValue(field.getName())));
-                    }
-                }
-                list.set(x, ((U) b));
-            }
+    private void validaPermissao(boolean valida) {
+        if (valida && !loginService.getUsuarioAtual().getFlagAdministrador()) {
+            throw new ApiError("Você não possuí permissão para a ação!");
         }
-        return list;
-    }*/
+    }
 
 }

@@ -45,12 +45,19 @@ public class ServiceGenerico<U extends Model> {
     @Transactional
     public Retorno exclui(Long id) {
         try {
-            U u = buscaPorId(id);
+            return exclui(buscaPorId(id));
+        } catch (Exception e) {
+            return new Retorno<>(e.getMessage());
+        }
+    }
+
+    public Retorno exclui(U u) {
+        try {
             if (u == null) {
                 return new Retorno("Id informado não existe!");
             }
             entityManager.remove(u);
-            return new Retorno(id);
+            return new Retorno(u.getId());
         } catch (Exception e) {
             return new Retorno<>(e.getMessage());
         }
@@ -161,23 +168,27 @@ public class ServiceGenerico<U extends Model> {
                     .setMaxResults(tamanho)
                     .getResultList();
         } else {
-            for (Filtro filtro : filtroList) {
-                switch (filtro.getComparador()) {
-                    case IGUAL:
-                        criteriaQuery.where(criteriaBuilder.equal(root.get(filtro.getAtributo()), filtro.getValor()));
-                        break;
-                    case DIFERENTE:
-                        criteriaQuery.where(criteriaBuilder.notEqual(root.get(filtro.getAtributo()), filtro.getValor()));
-                        break;
-                    case CONTEM:
-                        criteriaQuery.where(criteriaBuilder.like(root.get(filtro.getAtributo()), "%" + filtro.getValor() + "%"));
-                        break;
+            try {
+                for (Filtro filtro : filtroList) {
+                    switch (filtro.getComparador()) {
+                        case IGUAL:
+                            criteriaQuery.where(criteriaBuilder.equal(root.get(filtro.getAtributo()), filtro.getValor()));
+                            break;
+                        case DIFERENTE:
+                            criteriaQuery.where(criteriaBuilder.notEqual(root.get(filtro.getAtributo()), filtro.getValor()));
+                            break;
+                        case CONTEM:
+                            criteriaQuery.where(criteriaBuilder.like(root.get(filtro.getAtributo()), "%" + filtro.getValor() + "%"));
+                            break;
+                    }
                 }
+                return entityManager.createQuery(criteriaQuery)
+                        .setFirstResult(paginaAtual * tamanho)
+                        .setMaxResults(tamanho)
+                        .getResultList();
+            } catch (Exception e) {
+                throw new ApiError("Erro de filtro!");
             }
-            return entityManager.createQuery(criteriaQuery)
-                    .setFirstResult(paginaAtual * tamanho)
-                    .setMaxResults(tamanho)
-                    .getResultList();
         }
     }
 

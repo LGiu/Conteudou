@@ -2,6 +2,7 @@ package br.com.conteudou.Controller;
 
 import br.com.conteudou.Model.Conteudo;
 import br.com.conteudou.Service.ConteudoService;
+import br.com.conteudou.Service.LoginService;
 import br.com.conteudou.Util.DadosPaginados;
 import br.com.conteudou.Util.Patch;
 import br.com.conteudou.Util.Retorno;
@@ -16,8 +17,8 @@ public class ConteudoController {
     private final Patch<Conteudo> patch;
 
     @Autowired
-    public ConteudoController(ConteudoService conteudoService) {
-        patch = new Patch<>(conteudoService, Conteudo.class);
+    public ConteudoController(ConteudoService conteudoService, LoginService loginService) {
+        patch = new Patch<>(conteudoService, Conteudo.class, loginService);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/conteudo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
