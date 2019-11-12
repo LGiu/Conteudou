@@ -1,6 +1,7 @@
 package br.com.conteudou.Util;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -31,6 +32,19 @@ public class Excecoes {
             return new ResponseEntity<>(new Retorno(e.getMessage()), HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>(new Retorno("Erro!"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<Retorno> execaoUnique(Exception e) {
+        if (e.getCause() != null && e.getCause().getClass() == org.hibernate.exception.ConstraintViolationException.class) {
+            return new ResponseEntity<>(new Retorno<>("Existem atributos que devem ser únicos!"), HttpStatus.BAD_REQUEST);
+        } else {
+            if (perfil != null && perfil.equals("DEV")) {
+                return new ResponseEntity<>(new Retorno(e.getMessage()), HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>(new Retorno("Erro!"), HttpStatus.BAD_REQUEST);
+            }
         }
     }
 

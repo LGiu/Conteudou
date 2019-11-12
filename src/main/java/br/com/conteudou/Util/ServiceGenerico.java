@@ -7,13 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,43 +53,28 @@ public class ServiceGenerico<U extends Model> {
             if (u == null) {
                 return new Retorno("Id informado não existe!");
             }
-            entityManager.remove(u);
+            jpaRepository.delete(u);
             return new Retorno(u.getId());
         } catch (Exception e) {
             return new Retorno<>(e.getMessage());
         }
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public Retorno salva(U u) {
         return salva(u, true);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public Retorno salva(U u, boolean valida) {
-        try {
-            if (valida) {
-                Retorno retorno = validador(u);
-                if (retorno.isErro()) {
-                    return retorno;
-                }
-            }
-            if (u.getId() == null) {
-                entityManager.persist(u);
-            } else {
-                entityManager.merge(u);
-            }
-            return new Retorno(u);
-        } catch (Exception e) {
-            if (e.getCause().getClass() == org.hibernate.exception.ConstraintViolationException.class) {
-                UniqueConstraint[] un = u.getClass().getAnnotation(Table.class).uniqueConstraints();
-                if (un.length > 0) {
-                    return new Retorno<>("Os atributos " + Arrays.toString(un[0].columnNames()) + " devem ser únicos!");
-                } else {
-                    return new Retorno<>("Exitem atributos que devem ser únicos!");
-                }
-            } else {
-                return new Retorno<>(e.getMessage());
+        if (valida) {
+            Retorno retorno = validador(u);
+            if (retorno.isErro()) {
+                return retorno;
             }
         }
+        jpaRepository.save(u);
+        return new Retorno(u);
     }
 
     public List<U> buscaLista() {
