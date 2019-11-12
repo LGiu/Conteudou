@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Comparador {
 
     IGUAL("IGUAL", "="),
-    DIFERENTE("DIFERENTE", "<>>"),
+    DIFERENTE("DIFERENTE", "<>"),
     CONTEM("CONTEM", "CONTEM");
 
     private final String chave;
