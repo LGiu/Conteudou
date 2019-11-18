@@ -3,6 +3,7 @@ package br.com.conteudou.Model;
 
 import br.com.conteudou.Interface.Model;
 import br.com.conteudou.Util.Modelador;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.Range;
 
@@ -39,6 +40,7 @@ public class Curso extends Modelador<Curso> implements Model {
     private String cor;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.REMOVE)
+    @JsonBackReference
     private List<Materia> materias;
 
     @Override
