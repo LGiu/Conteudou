@@ -3,7 +3,6 @@ package br.com.conteudou.Model;
 
 import br.com.conteudou.Interface.Model;
 import br.com.conteudou.Util.Modelador;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -39,8 +38,7 @@ public class Materia extends Modelador<Materia> implements Model {
     @NotNull(message = "A cor deve ser informada!")
     private String cor;
 
-    @OneToMany(mappedBy = "materia", cascade = CascadeType.REMOVE)
-    @JsonBackReference
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<SubMateria> subMaterias;
 
     @Override
