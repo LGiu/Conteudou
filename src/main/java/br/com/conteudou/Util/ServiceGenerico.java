@@ -144,7 +144,7 @@ public class ServiceGenerico<U extends Model> {
 
         tamanho = (tamanho == null ? 10 : tamanho);
         paginaAtual = (paginaAtual == null ? 0 : paginaAtual);
-        if (filtroList == null || !filtroList.isEmpty()) {
+        if (filtroList == null || filtroList.isEmpty()) {
             return entityManager.createQuery(criteriaQuery)
                     .setFirstResult(paginaAtual * tamanho)
                     .setMaxResults(tamanho)
@@ -154,13 +154,25 @@ public class ServiceGenerico<U extends Model> {
                 for (Filtro filtro : filtroList) {
                     switch (filtro.getComparador()) {
                         case IGUAL:
-                            criteriaQuery.where(criteriaBuilder.equal(root.get(filtro.getAtributo()), filtro.getValor()));
+                            if (filtro.getJoin() != null) {
+                                criteriaQuery.where(criteriaBuilder.equal(root.join(filtro.getJoin()).get(filtro.getAtributo()), filtro.getValor()));
+                            } else {
+                                criteriaQuery.where(criteriaBuilder.equal(root.get(filtro.getAtributo()), filtro.getValor()));
+                            }
                             break;
                         case DIFERENTE:
-                            criteriaQuery.where(criteriaBuilder.notEqual(root.get(filtro.getAtributo()), filtro.getValor()));
+                            if (filtro.getJoin() != null) {
+                                criteriaQuery.where(criteriaBuilder.notEqual(root.join(filtro.getJoin()).get(filtro.getAtributo()), filtro.getValor()));
+                            } else {
+                                criteriaQuery.where(criteriaBuilder.notEqual(root.get(filtro.getAtributo()), filtro.getValor()));
+                            }
                             break;
                         case CONTEM:
-                            criteriaQuery.where(criteriaBuilder.like(root.get(filtro.getAtributo()), "%" + filtro.getValor() + "%"));
+                            if (filtro.getJoin() != null) {
+                                criteriaQuery.where(criteriaBuilder.like(root.join(filtro.getJoin()).get(filtro.getAtributo()), "%" + filtro.getValor() + "%"));
+                            } else {
+                                criteriaQuery.where(criteriaBuilder.like(root.get(filtro.getAtributo()), "%" + filtro.getValor() + "%"));
+                            }
                             break;
                     }
                 }

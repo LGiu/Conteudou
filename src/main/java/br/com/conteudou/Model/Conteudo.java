@@ -43,6 +43,7 @@ public class Conteudo extends Modelador<Conteudo> implements Model {
     private String cor;
 
     @OneToMany(mappedBy = "conteudo", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("conteudo")
     private List<Link> links;
 
     @Override

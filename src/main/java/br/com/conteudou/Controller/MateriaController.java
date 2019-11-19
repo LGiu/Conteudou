@@ -22,18 +22,18 @@ public class MateriaController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/materia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DadosPaginados<Materia>> buscaMateria(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                                @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                                @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+    public ResponseEntity<DadosPaginados<Materia>> buscaMateria(@RequestParam(value = "ordem", required = false) String ordem,
+                                                                @RequestParam(value = "tamanho", required = false) Integer tamanho,
+                                                                @RequestParam(value = "paginaAtual", required = false) Integer paginaAtual,
                                                                 @PathVariable Long id) {
         return patch.consultar(id, ordem, tamanho, paginaAtual, true);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/materias", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DadosPaginados<Materia>> buscaMaterias(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                                 @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                                 @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
-                                                                 @RequestHeader(value = "filtros", required = false) String filtros) {
+    public ResponseEntity<DadosPaginados<Materia>> buscaMaterias(@RequestParam(value = "ordem", required = false) String ordem,
+                                                                 @RequestParam(value = "tamanho", required = false) Integer tamanho,
+                                                                 @RequestParam(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                 @RequestParam(value = "filtros", required = false) String filtros) {
         return patch.consultar(ordem, tamanho, paginaAtual, filtros, true);
     }
 

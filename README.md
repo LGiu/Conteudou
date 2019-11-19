@@ -27,13 +27,13 @@ ________________________
  
     POST - http://127.0.0.1:8090/avalicao
  
-    { "conteudo": { "iConteudo": 1 }, "avaliacao": 5 }
+    { "conteudo": { "id": 1 }, "avaliacao": 5 }
 
 #### Alterar
 
     PUT - http://127.0.0.1:8090/avalicao
     
-    { "iAvaliacao": 1, "conteudo": { "iConteudo": 1 }, "avaliacao": 5 }
+    { "id": 1, "conteudo": { "id": 1 }, "avaliacao": 5 }
 
 #### - Excluir
 
@@ -75,13 +75,13 @@ __________________
  
     POST - http://127.0.0.1:8090/comentario
      
-    { "conteudo": { "iConteudo": 1 }, "comentario": "teste" }
+    { "conteudo": { "id": 1 }, "comentario": "teste" }
 
 #### Alterar
 
     PUT - http://127.0.0.1:8090/comentario
     
-    { "iComentario": 1, "conteudo": { "iConteudo": 1 }, "comentario": "teste alterado" }
+    { "id": 1, "conteudo": { "id": 1 }, "comentario": "teste alterado" }
 
 #### Excluir
 
@@ -115,34 +115,35 @@ __________________
 
 #### Salvar
  
-    POST - http://127.0.0.1:8090/comentario
+    POST - http://127.0.0.1:8090/conteudo
      
-    { "conteudo": { "iConteudo": 1 }, "comentario": "teste" }
+    { "subMateria": { "id": 1 }, "nome": "teste", "descricao": "teste", "cor": "#ffffff" }
 
 #### Alterar
 
-    PUT - http://127.0.0.1:8090/comentario
+    PUT - http://127.0.0.1:8090/conteudo
     
-    { "iComentario": 1, "conteudo": { "iConteudo": 1 }, "comentario": "teste alterado" }
+    { "id": 1, "subMateria": { "id": 1 }, "nome": "teste", "descricao": "teste", "cor": "#ffffff" }
 
 #### Excluir
 
-    DELETE  http://127.0.0.1:8090/comentario/{id}
+    DELETE  http://127.0.0.1:8090/conteudo/{id}
 
 #### Buscar Um
 
-    GET - http://127.0.0.1:8090/comentario/{id}
+    GET - http://127.0.0.1:8090/conteudo/{id}
 
 #### Burcar Todos
 
-    GET - http://127.0.0.1:8090/comentarios
+    GET - http://127.0.0.1:8090/conteudos
 
 #### Burcar com Filtro
 
-    GET - http://127.0.0.1:8090/comentarios?filtros=id=1
+    GET - http://127.0.0.1:8090/conteudos?filtros=id=1
     
-    GET - http://127.0.0.1:8090/comentarios?filtros=comentario CONTEM 'teste'
+    GET - http://127.0.0.1:8090/conteudos?filtros=nome CONTEM 'teste'
+    GET - http://127.0.0.1:8090/conteudos?filtros=nome CONTEM 'teste'
     
-    GET - http://127.0.0.1:8090/comentarios?filtros=id=2&ordem=ASC&tamanho=10&paginaAtual=1
+    GET - http://127.0.0.1:8090/conteudos?filtros=id=2&ordem=ASC&tamanho=10&paginaAtual=1
 
 __________________

@@ -6,6 +6,8 @@ public class Filtro {
 
     private String atributo;
 
+    private String join;
+
     private Comparador comparador;
 
     private String valor;
@@ -14,7 +16,16 @@ public class Filtro {
         this.atributo = atributo;
         this.comparador = comparador;
         this.valor = valor;
+        this.join = null;
     }
+
+    public Filtro(String atributo, Comparador comparador, String valor, String join) {
+        this.atributo = atributo;
+        this.comparador = comparador;
+        this.valor = valor;
+        this.join = join;
+    }
+
 
     public String getAtributo() {
         return atributo;
@@ -38,5 +49,13 @@ public class Filtro {
 
     public void setValor(String valor) {
         this.valor = valor;
+    }
+
+    public String getJoin() {
+        return join;
+    }
+
+    public void setJoin(String join) {
+        this.join = join;
     }
 }

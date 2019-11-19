@@ -136,10 +136,14 @@ public class Patch<U extends Model> {
                     comparador = Comparador.IGUAL;
                 } else if (f.contains(Comparador.DIFERENTE.getDescricao())) {
                     comparador = Comparador.DIFERENTE;
-                } else if (f.contains(Comparador.CONTEM.getDescricao())) {
-                    comparador = Comparador.IGUAL;
+                } else if (f.toUpperCase().contains(Comparador.CONTEM.getDescricao())) {
+                    comparador = Comparador.CONTEM;
                 }
-                filtroList.add(new Filtro(f.substring(0, f.indexOf(comparador.getDescricao())), comparador, f.substring(f.lastIndexOf(comparador.getDescricao()) + 1)));
+                if (f.substring(0, f.toUpperCase().indexOf(comparador.getDescricao())).contains(".")) {
+                    filtroList.add(new Filtro(f.substring(f.indexOf(".") + (comparador.getDescricao().length()), f.toUpperCase().indexOf(comparador.getDescricao())).trim(), comparador, f.substring(f.toUpperCase().lastIndexOf(comparador.getDescricao()) + 1).trim().trim(), f.substring(0, f.indexOf("."))));
+                } else {
+                    filtroList.add(new Filtro(f.substring(0, f.toUpperCase().indexOf(comparador.getDescricao())).trim(), comparador, f.substring(f.toUpperCase().lastIndexOf(comparador.getDescricao()) + (comparador.getDescricao().length())).trim()));
+                }
             }
         } catch (Exception e) {
             return null;

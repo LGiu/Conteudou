@@ -39,6 +39,7 @@ public class Curso extends Modelador<Curso> implements Model {
     private String cor;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("curso")
     private List<Materia> materias;
 
     @Override

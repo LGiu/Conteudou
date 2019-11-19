@@ -39,6 +39,7 @@ public class Materia extends Modelador<Materia> implements Model {
     private String cor;
 
     @OneToMany(mappedBy = "materia", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("materia")
     private List<SubMateria> subMaterias;
 
     @Override

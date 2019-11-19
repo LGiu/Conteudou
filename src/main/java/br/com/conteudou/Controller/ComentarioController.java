@@ -22,18 +22,18 @@ public class ComentarioController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/comentario/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DadosPaginados<Comentario>> buscaComentario(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                                      @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                                      @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
+    public ResponseEntity<DadosPaginados<Comentario>> buscaComentario(@RequestParam(value = "ordem", required = false) String ordem,
+                                                                      @RequestParam(value = "tamanho", required = false) Integer tamanho,
+                                                                      @RequestParam(value = "paginaAtual", required = false) Integer paginaAtual,
                                                                       @PathVariable Long id) {
         return patch.consultar(id, ordem, tamanho, paginaAtual);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/comentarios", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DadosPaginados<Comentario>> buscaComentarios(@RequestHeader(value = "ordem", required = false) String ordem,
-                                                                       @RequestHeader(value = "tamanho", required = false) Integer tamanho,
-                                                                       @RequestHeader(value = "paginaAtual", required = false) Integer paginaAtual,
-                                                                       @RequestHeader(value = "filtros", required = false) String filtros) {
+    public ResponseEntity<DadosPaginados<Comentario>> buscaComentarios(@RequestParam(value = "ordem", required = false) String ordem,
+                                                                       @RequestParam(value = "tamanho", required = false) Integer tamanho,
+                                                                       @RequestParam(value = "paginaAtual", required = false) Integer paginaAtual,
+                                                                       @RequestParam(value = "filtros", required = false) String filtros) {
         return patch.consultar(ordem, tamanho, paginaAtual, filtros);
     }
 
