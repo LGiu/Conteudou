@@ -73,7 +73,7 @@ public class ServiceGenerico<U extends Model> {
                 return retorno;
             }
         }
-        jpaRepository.save(u);
+        jpaRepository.saveAndFlush(u);
         return new Retorno(u);
     }
 
@@ -128,6 +128,10 @@ public class ServiceGenerico<U extends Model> {
         }
     }
 
+    public List<U> selecao(List<Filtro> filtroList) {
+        return selecao(null, null, null, filtroList);
+    }
+
     private List<U> selecao(String ordem, Integer tamanho, Integer paginaAtual) {
         return selecao(ordem, tamanho, paginaAtual, null);
     }
@@ -142,7 +146,6 @@ public class ServiceGenerico<U extends Model> {
             criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
         }
 
-        tamanho = (tamanho == null ? 10 : tamanho);
         paginaAtual = (paginaAtual == null ? 0 : paginaAtual);
         if (filtroList == null || filtroList.isEmpty()) {
             return entityManager.createQuery(criteriaQuery)
@@ -176,10 +179,15 @@ public class ServiceGenerico<U extends Model> {
                             break;
                     }
                 }
-                return entityManager.createQuery(criteriaQuery)
-                        .setFirstResult(paginaAtual * tamanho)
-                        .setMaxResults(tamanho)
-                        .getResultList();
+                if (tamanho == null) {
+                    return entityManager.createQuery(criteriaQuery)
+                            .getResultList();
+                } else {
+                    return entityManager.createQuery(criteriaQuery)
+                            .setFirstResult(paginaAtual * tamanho)
+                            .setMaxResults(tamanho)
+                            .getResultList();
+                }
             } catch (Exception e) {
                 throw new ApiError("Erro de filtro!");
             }
