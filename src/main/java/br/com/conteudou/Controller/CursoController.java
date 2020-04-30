@@ -34,7 +34,7 @@ public class CursoController {
                                                              @RequestParam(value = "tamanho", required = false) Integer tamanho,
                                                              @RequestParam(value = "paginaAtual", required = false) Integer paginaAtual,
                                                              @RequestParam(value = "filtros", required = false) String filtros) {
-        return patch.consultar(ordem, tamanho, paginaAtual, filtros, true);
+        return patch.consultar(ordem, tamanho, paginaAtual, filtros);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/curso", produces = MediaType.APPLICATION_JSON_VALUE)

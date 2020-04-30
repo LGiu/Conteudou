@@ -10,7 +10,7 @@ public class DadosPaginados<U extends Model> {
     private Integer quantidadeRegistros;
     private Integer quantidadePaginas;
     private Integer tamanhoPagina;
-    private List<U> Conteudo;
+    private List<U> conteudo;
 
     public Integer getNumeroPagina() {
         return numeroPagina;
@@ -45,10 +45,10 @@ public class DadosPaginados<U extends Model> {
     }
 
     public List<U> getConteudo() {
-        return Conteudo;
+        return conteudo;
     }
 
     public void setConteudo(List<U> conteudo) {
-        Conteudo = conteudo;
+        this.conteudo = conteudo;
     }
 }

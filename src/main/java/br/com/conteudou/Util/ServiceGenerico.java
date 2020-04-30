@@ -145,6 +145,7 @@ public class ServiceGenerico<U extends Model> {
         } else {
             criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
         }
+        tamanho = tamanho == null ? 10 : tamanho;
 
         paginaAtual = (paginaAtual == null ? 0 : paginaAtual);
         if (filtroList == null || filtroList.isEmpty()) {
